@@ -35,13 +35,13 @@ class TestAnalysis(TestCase):
         self.analysis = Analysis()
 
     def test_transform_for_heatmap(self):
-        data = [AnalysisData("run tests", "CommunityParser", "something"),
-                AnalysisData("run tests", "CommunityParser", "something"),
-                AnalysisData("remove previous version and re-verify cit", "CommunityParser", "something-else"),
-                AnalysisData("remove previous version and re-verify cit", "CommunityParser", "something-else"),
-                AnalysisData("remove previous version and re-verify cit", "GSTP", "something-else")]
+        data = [AnalysisData("run tests", "TestProject", "something"),
+                AnalysisData("run tests", "TestProject", "something"),
+                AnalysisData("re-verify env", "TestProject", "something-else"),
+                AnalysisData("re-verify env", "TestProject", "something-else"),
+                AnalysisData("re-verify env", "AnotherProject", "something-else")]
         expected_heatmap_data = {"z": [[2, 2], [0, 1]],
-                                 "y": ["CommunityParser", "GSTP"],
-                                 "x": ["run tests", "remove previous version and re-verify cit"]}
+                                 "y": ["TestProject", "AnotherProject"],
+                                 "x": ["run tests", "re-verify env"]}
 
         self.assertEquals(self.analysis.transform_for_heatmap(data), expected_heatmap_data)
