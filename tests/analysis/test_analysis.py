@@ -6,14 +6,6 @@ from djinn.analysis import Analysis, AnalysisService, AnalysisData
 from djinn.database.entity import PipelineRun
 
 
-class Matcher(object):
-    def __init__(self, some_obj):
-        self.some_obj = some_obj
-
-    def __eq__(self, other):
-        return self.some_obj.compare(other)
-
-
 class TestAnalysisService(TestCase):
     def test_get_failures_heatmap_data(self):
         # Arrange
