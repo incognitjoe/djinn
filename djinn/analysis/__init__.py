@@ -19,6 +19,7 @@ class AnalysisService(object):
     def get_failures_heatmap_data(self):
         """
         Get the heatmap data for all failures.
+        :return: a dictionary of the data for the x, y and z axes of a heatmap.
         """
         failures = self.pipeline.get_all_failures()
         data = [AnalysisData(x.stage_failed, x.project, x.repository) for x in failures]
@@ -76,7 +77,8 @@ class Analysis(object):
         Turn flat list of AnalysisData objects into a nested structure. This
         process deduplicates keys and makes relationships from stages to projects
         easier to reason about.
-        :param data
+        :param data: the data to be transformed.
+        :return: the transformed data.
         """
         deduped = {}
         data.sort(key=lambda x: x.stage)
