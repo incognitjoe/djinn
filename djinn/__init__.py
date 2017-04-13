@@ -1,9 +1,12 @@
+from .analysis import Analysis
+from .analysis import AnalysisService
+from .api import DJinnAPI
 from .database import PipelineResults
-from .jenkins import DJenkins
+from .djenkins import DJenkins
 from .djinnutils.loggers import get_named_logger
 
 
-class Djinn(object):
+class DJinn(object):
     def __init__(self, jenkinsurl=None, dburl=None):
         """
         Initialize connections to Jenkins and a persistence layer.
@@ -13,6 +16,7 @@ class Djinn(object):
         self.logger = get_named_logger('Djinn')
         self.dj = DJenkins(url=jenkinsurl, logger=self.logger)
         self.db = PipelineResults(connection_url=dburl, echo=False)
+        self.service = AnalysisService(analysis=Analysis(), pipeline=self.db)
 
     def get_all_pipeline_results_and_save_to_db(self, pipelinebranch):
         """
@@ -22,3 +26,6 @@ class Djinn(object):
         """
         pipelines = self.dj.get_pipeline_history_for_all_repos(pipelinebranch=pipelinebranch)
         self.db.insert_result_batch(pipelines)
+
+    def create_api(self):
+        return DJinnAPI(djenkins=self.dj, pipeline_results=self.db, analysis_service=self.service)

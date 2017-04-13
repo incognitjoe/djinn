@@ -40,7 +40,7 @@ class PipelineResults(object):
     def insert_single_result(self, result):
         """
         Add new unique result to database
-        :param result: result from djinn.jenkins.DJenkins as dict
+        :param result: result from djinn.djenkins.DJenkins as dict
         """
         if not self._check_row_exists(pk=result.get('id')):
             self.session.add(PipelineRun(**result))
@@ -49,7 +49,7 @@ class PipelineResults(object):
     def insert_result_batch(self, results):
         """
         Add a list of results to database
-        :param results: list of results from djinn.jenkins.DJenkins
+        :param results: list of results from djinn.djenkins.DJenkins
         """
         for result in results:
             if not self._check_row_exists(pk=result.get('id')):
