@@ -15,6 +15,7 @@ class DJinn(object):
         """
         self.logger = get_named_logger('Djinn')
         self.dj = DJenkins(url=jenkinsurl, logger=self.logger)
+        self.dburl = dburl
         self.db = PipelineResults(connection_url=dburl, echo=False)
         self.service = AnalysisService(analysis=Analysis(), pipeline=self.db)
 
@@ -25,7 +26,7 @@ class DJinn(object):
         :return: None
         """
         pipelines = self.dj.get_pipeline_history_for_all_repos(pipelinebranch=pipelinebranch)
-        self.db.insert_result_batch(pipelines)
+        PipelineResults(connection_url=self.dburl, echo=False).insert_result_batch(pipelines)
 
     def create_api(self):
         return DJinnAPI(djenkins=self.dj, pipeline_results=self.db, analysis_service=self.service)

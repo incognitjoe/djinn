@@ -1,6 +1,6 @@
 import falcon
 
-from .resources import HeatmapResource
+from .resources import HeatmapResource, ResultsResource
 
 
 class DJinnAPI(falcon.API):
@@ -22,3 +22,6 @@ class DJinnAPI(falcon.API):
         heatmap = HeatmapResource(analysis_service=analysis_service)
         self.add_route('/heatmap/', heatmap)
         self.add_route('/heatmap/{project}', heatmap)
+        results = ResultsResource(database=self.db)
+        self.add_route('/results/', results)
+        self.add_route('/results/{project}', results)

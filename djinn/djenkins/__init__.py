@@ -47,7 +47,7 @@ class DJenkins(object):
         try:
             resp = self.session.get(url)
             if resp.status_code == 404:
-                self.logger.info('History not found for {}, skipping.'.format(url))
+                # Some repos don't have any history, ignore and move on with our lives.
                 return dict()
             return resp.json()
         except ValueError as err:
@@ -65,7 +65,7 @@ class DJenkins(object):
         runid = pipeline.get('id')
         status = pipeline.get('status')
         start = pipeline.get('startTimeMillis')
-        result = {'id': '{}{}'.format(repo, runid), 'timestamp': int(start), 'project': project, 'repository': repo,
+        result = {'id': '{}{}'.format(repo, runid), 'timestamp': start, 'project': project, 'repository': repo,
                   'status': status, 'run_id': runid}
         if status == 'SUCCESS':
             result['success'] = True
@@ -117,7 +117,7 @@ class DJenkins(object):
         :param pipelinebranch: branch to fetch history from.
         :return: list of dicts containing pipeline run information
         """
-        self.logger.info('Retrieving history for {}, branch {}'.format(reponame, pipelinebranch))
+        self.logger.debug('Retrieving history for {}, branch {}'.format(reponame, pipelinebranch))
         results = list()
         apiurl = '{}/job/{}/job/{}/job/{}/wfapi/runs'.format(self.jurl, projectname, reponame, pipelinebranch)
         pipelines = self._get_json_response(apiurl)

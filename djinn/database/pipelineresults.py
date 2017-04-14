@@ -78,6 +78,14 @@ class PipelineResults(object):
         """
         return self._get_filtered_results(success=False)
 
+    def get_results_for_project(self, project):
+        """
+        Get all results for a given project.
+        :param project: project name as string
+        :return: list of PipelineRun rows
+        """
+        return self._get_filtered_results(project=project)
+
     def get_results_for_repo(self, reponame):
         """
         Get all results for a given repository.
