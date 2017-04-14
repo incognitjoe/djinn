@@ -65,7 +65,7 @@ class DJenkins(object):
         runid = pipeline.get('id')
         status = pipeline.get('status')
         start = pipeline.get('startTimeMillis')
-        result = {'id': '{}{}'.format(repo, runid), 'timestamp': start, 'project': project, 'repository': repo,
+        result = {'id': '{}{}'.format(repo, runid), 'timestamp': int(start), 'project': project, 'repository': repo,
                   'status': status, 'run_id': runid}
         if status == 'SUCCESS':
             result['success'] = True

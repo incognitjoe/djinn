@@ -18,8 +18,7 @@ class TestDJinn(testing.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        cls.djinn = DJinn(jenkinsurl='http://admin:103b194e4c57eeda91333e6e51c4f40e@localhost:8080',
-                          dburl='sqlite:///')
+        cls.djinn = DJinn(dburl='sqlite:///')
         cls.djinn.db.insert_result_batch([cls.successfulresult, cls.failedresult, cls.failedresult2])
 
     def setUp(self):
