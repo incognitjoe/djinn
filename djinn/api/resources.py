@@ -20,7 +20,6 @@ def format_results(resultlist):
 def set_cors_header(req, resp, resource):
     """
     CORS function to be used with Falcon.after decorators. Args are provided by Falcon calls.
-    Allowed origin can be overriden by setting the DJINN_ALLOW_ORIGIN environment variable.
     """
     resp.set_header(name='Access-Control-Allow-Origin', value='*')
 
