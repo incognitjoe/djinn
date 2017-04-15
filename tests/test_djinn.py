@@ -2,10 +2,10 @@ import os
 
 from falcon import testing
 
-from djinn import DJinn
+from djinn import Djinn
 
 
-class TestDJinn(testing.TestCase):
+class TestDjinn(testing.TestCase):
     basefolder = os.path.dirname(os.path.realpath(__file__))
     mock_results = [{'status': u'SUCCESS', 'success': True, 'repository': 'jenkinsfile-test', 'run_id': u'7',
                      'timestamp': '1491143071036', 'project': 'TEST', 'id': 'jenkinsfile-test7'},
@@ -20,11 +20,11 @@ class TestDJinn(testing.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        cls.djinn = DJinn(dburl='sqlite:///')
+        cls.djinn = Djinn(dburl='sqlite:///')
         cls.djinn.db.insert_result_batch(results=cls.mock_results)
 
     def setUp(self):
-        super(TestDJinn, self).setUp()
+        super(TestDjinn, self).setUp()
         self.app = self.djinn.create_api()
 
     def test_heatmap(self):
@@ -34,6 +34,9 @@ class TestDJinn(testing.TestCase):
         self.assertEqual(result.json, expected_heatmap)
 
     def test_heatmap_for_project(self):
+        """
+        Unimplemented, will break once implemented.
+        """
         result = self.simulate_get('/heatmap/TEST/')
         self.assertEqual(result.status_code, 501)
 

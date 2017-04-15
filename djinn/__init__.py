@@ -6,7 +6,7 @@ from .djenkins import DJenkins
 from .djinnutils.loggers import get_named_logger
 
 
-class DJinn(object):
+class Djinn(object):
     def __init__(self, jenkinsurl=None, dburl=None):
         """
         Initialize connections to Jenkins and a persistence layer.
@@ -22,11 +22,16 @@ class DJinn(object):
     def get_all_pipeline_results_and_save_to_db(self, pipelinebranch):
         """
         Fetch all repository pipeline data and write to database.
+        Could be memory-hungry depending on your instance - may be better to break it down by folder if so.
         :param pipelinebranch: branch name used for pipelines.
         :return: None
         """
         pipelines = self.dj.get_pipeline_history_for_all_repos(pipelinebranch=pipelinebranch)
-        PipelineResults(connection_url=self.dburl, echo=False).insert_result_batch(pipelines)
+        self.db.insert_result_batch(pipelines)
 
     def create_api(self):
+        """
+        Instantiate a falcon.API instance.
+        :return: falcon.API instance
+        """
         return DJinnAPI(djenkins=self.dj, pipeline_results=self.db, analysis_service=self.service)

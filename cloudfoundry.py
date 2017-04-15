@@ -2,7 +2,7 @@ import os
 from threading import Thread
 from time import sleep
 
-from djinn import DJinn
+from djinn import Djinn
 
 
 def get_pcf_mysql_connection_string():
@@ -39,7 +39,7 @@ def get_pipeline_data(pipelinebranch='develop', frequency=3600):
         sleep(frequency)
 
 
-djinn = DJinn(jenkinsurl=get_jenkins_url_from_env(), dburl=get_pcf_mysql_connection_string())
+djinn = Djinn(jenkinsurl=get_jenkins_url_from_env(), dburl=get_pcf_mysql_connection_string())
 app = djinn.create_api()
 fetch = Thread(target=get_pipeline_data)
 fetch.setDaemon(True)

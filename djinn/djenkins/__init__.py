@@ -26,7 +26,7 @@ class DJenkins(object):
     def check_for_valid_url(url):
         """
         Verify URL provided contains basic auth. Raises ValueError if regex doesn't match.
-        :param url: djenkins url containing protocol, auth and address, e.g. http://admin:apitoken@localhost
+        :param url: Jenkins url containing protocol, auth and address, e.g. http://admin:apitoken@localhost
         :raises: ValueError
         :return: True on success
         """

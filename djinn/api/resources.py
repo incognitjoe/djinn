@@ -3,29 +3,16 @@ import json
 import falcon
 
 
-def convert_db_objects_to_dicts(resultlist):
-    """
-    Take a list of SQLAlchemy DB objects and convert them to a dictionary
-    :param resultlist: list of SQLAlchemy response objects
-    :return: list of dicts
-    """
-    output = list()
-    for item in resultlist:
-        item = item.__dict__
-        item.pop('_sa_instance_state')
-        output.append(item)
-    return output
-
-
 def format_results(resultlist):
     """
-    Take a list of dicts of results and arrange them into a dict of {project: {repository: [stages] } }
+    Take a list of SQLAlchemy DB objects and arrange them into a dict of {project: {repository: [stages] } }
     :param resultlist: list of stage results
     :return: formatted dict of results
     """
-    resultlist = convert_db_objects_to_dicts(resultlist=resultlist)
     output = dict()
     for item in resultlist:
+        item = item.__dict__
+        item.pop('_sa_instance_state')
         output.setdefault(item.get('project'), {}).setdefault(item.get('repository'), []).append(item)
     return output
 
