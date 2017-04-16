@@ -1,29 +1,16 @@
 from collections import Counter, OrderedDict
 from itertools import groupby
+from abc import ABCMeta, abstractmethod
 
 
 class AnalysisService(object):
-    """
-    Service exposing methods for analyzing data from the store.
-    """
-
-    def __init__(self, analysis, pipeline):
-        """
-        Initialize the service.
-        :param analysis: an Analysis object.
-        :param pipeline: a PipelineResults object.
-        """
-        self.analysis = analysis
-        self.pipeline = pipeline
-
-    def get_failures_heatmap_data(self):
+    def get_failures_heatmap_data(self, analysis_strategy, failures):
         """
         Get the heatmap data for all failures.
         :return: a dictionary of the data for the x, y and z axes of a heatmap.
         """
-        failures = self.pipeline.get_all_failures()
         data = [AnalysisData(x.stage_failed, x.project, x.repository) for x in failures]
-        return self.analysis.transform_for_heatmap(data)
+        return analysis_strategy.transform_for_heatmap(data)
 
 
 class AnalysisData(object):
@@ -50,6 +37,33 @@ class AnalysisData(object):
 
 
 class Analysis(object):
+    __metaclass__ = ABCMeta
+    @abstractmethod
+    def transform_for_heatmap(self, data):
+        pass
+
+    def _dedup(self, data):
+        """
+        Turn flat list of AnalysisData objects into a nested structure. This
+        process deduplicates keys and makes relationships from stages to projects
+        easier to reason about.
+        :param data: the data to be transformed.
+        :return: the transformed data.
+        """
+        deduped = {}
+        data.sort(key=lambda x: x.stage)
+        for stage_name, stage_data in groupby(data, lambda x: x.stage):
+            item = {}
+            for project, project_data in groupby(stage_data, lambda x: x.project):
+                failures = sum(Counter(map(lambda x: x.repo, project_data)).values())
+                item[project] = failures
+
+            deduped[stage_name] = item
+        return deduped
+
+
+class ProjectStageAnalysis(Analysis):
+
     def transform_for_heatmap(self, data):
         """
         Transform data into the format for a plotly heatmap.
@@ -71,22 +85,3 @@ class Analysis(object):
                 z_next.append(failures)
             z.append(z_next)
         return {"x": x, "y": y.keys(), "z": z}
-
-    def _dedup(self, data):
-        """
-        Turn flat list of AnalysisData objects into a nested structure. This
-        process deduplicates keys and makes relationships from stages to projects
-        easier to reason about.
-        :param data: the data to be transformed.
-        :return: the transformed data.
-        """
-        deduped = {}
-        data.sort(key=lambda x: x.stage)
-        for stage_name, stage_data in groupby(data, lambda x: x.stage):
-            item = {}
-            for project, project_data in groupby(stage_data, lambda x: x.project):
-                failures = sum(Counter(map(lambda x: x.repo, project_data)).values())
-                item[project] = failures
-
-            deduped[stage_name] = item
-        return deduped

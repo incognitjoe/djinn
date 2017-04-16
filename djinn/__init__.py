@@ -17,7 +17,7 @@ class Djinn(object):
         self.dj = DJenkins(url=jenkinsurl, logger=self.logger)
         self.dburl = dburl
         self.db = PipelineResults(connection_url=dburl, echo=False)
-        self.service = AnalysisService(analysis=Analysis(), pipeline=self.db)
+        self.service = AnalysisService()
 
     def get_all_pipeline_results_and_save_to_db(self, pipelinebranch):
         """

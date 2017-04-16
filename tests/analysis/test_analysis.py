@@ -2,7 +2,7 @@ from unittest import TestCase
 
 from mock import Mock, MagicMock
 
-from djinn.analysis import Analysis, AnalysisService, AnalysisData
+from djinn.analysis import Analysis, AnalysisService, AnalysisData, ProjectStageAnalysis
 from djinn.database.entity import PipelineRun
 
 
@@ -11,12 +11,11 @@ class TestAnalysisService(TestCase):
         # Arrange
         data = [PipelineRun()]
         mock_analysis = Mock()
-        mock_pipeline_results = Mock()
-        mock_pipeline_results.get_all_failures = MagicMock(return_value=data)
-        service = AnalysisService(mock_analysis, mock_pipeline_results)
+        mock_pipeline_results = MagicMock(return_value=data)
+        service = AnalysisService()
 
         # Act
-        service.get_failures_heatmap_data()
+        service.get_failures_heatmap_data(mock_analysis, mock_pipeline_results)
 
         # Assert
         mock_analysis.transform_for_heatmap.assert_called_once()
@@ -24,7 +23,7 @@ class TestAnalysisService(TestCase):
 
 class TestAnalysis(TestCase):
     def setUp(self):
-        self.analysis = Analysis()
+        self.analysis = ProjectStageAnalysis()
 
     def test_transform_for_heatmap(self):
         data = [AnalysisData("run tests", "TestProject", "something"),

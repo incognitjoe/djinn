@@ -19,7 +19,7 @@ class DJinnAPI(falcon.API):
         self.djenkins = djenkins
         self.db = pipeline_results
         self.analysis = analysis_service
-        heatmap = HeatmapResource(analysis_service=analysis_service)
+        heatmap = HeatmapResource(analysis_service=analysis_service, database=self.db)
         self.add_route('/heatmap/', heatmap)
         self.add_route('/heatmap/{project}', heatmap)
         results = ResultsResource(database=self.db)
