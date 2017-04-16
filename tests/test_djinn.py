@@ -33,9 +33,6 @@ class TestDjinn(testing.TestCase):
         self.assertEqual(result.json, expected_heatmap)
 
     def test_heatmap_for_project(self):
-        """
-        Unimplemented, will break once implemented.
-        """
         expected_heatmap = {u'x': [u'Setup', u'Deploy'], u'y': [u'jenkinsfile-test'], u'z': [[1, 1]]}
         result = self.simulate_get('/heatmap/TEST/')
         self.assertEqual(result.status_code, 200)
