@@ -53,18 +53,18 @@ def repos_stage_inner_groupby(stage_data):
     return groupby(stage_data, lambda item: item.repo)
 
 
-def _transform_for_heatmap(inner_groupby):
+def _transform_for_heatmap(analysis_strategy):
     """
-    Transform data into the format for a plotly heatmap.
-    :param data: a list of AnalysisData objects.
-    :return: a dictionary of the x, y and z axes.
+    Build a transformer for transforming data into the format for a plotly heatmap.
+    :param analysis_strategy: the strategy to group a field by.
+    :return: a function which transforms data given the strategy.
     """
 
     def f(data):
         x = []
         y = OrderedDict()
         z = []
-        deduped = _dedup(data, inner_groupby)
+        deduped = _dedup(data, analysis_strategy)
         for stage, details in deduped.items():
             x.append(stage)
             for inner in details.keys():
