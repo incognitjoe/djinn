@@ -58,6 +58,7 @@ def transform_for_heatmap(inner_groupby):
                 z_next.append(failures)
             z.append(z_next)
         return {"x": x, "y": y.keys(), "z": z}
+
     return f
 
 
@@ -86,3 +87,11 @@ def projects_stage_inner_groupby(stage_data):
     against stages. 
     """
     return groupby(stage_data, lambda item: item.project)
+
+
+def repos_stage_inner_groupby(stage_data):
+    """
+    Strategy for transforming raw data into heatmap data mapping projects 
+    against stages. 
+    """
+    return groupby(stage_data, lambda item: item.repo)
