@@ -1,8 +1,7 @@
+from mock import Mock, MagicMock
 from unittest import TestCase
 
-from mock import Mock, MagicMock
-
-from djinn.analysis import Analysis, AnalysisService, AnalysisData, ProjectStageAnalysis
+from djinn.analysis import AnalysisService, AnalysisData, transform_for_heatmap, projects_stage_inner_groupby
 from djinn.database.entity import PipelineRun
 
 
@@ -18,13 +17,10 @@ class TestAnalysisService(TestCase):
         service.get_failures_heatmap_data(mock_analysis, mock_pipeline_results)
 
         # Assert
-        mock_analysis.transform_for_heatmap.assert_called_once()
+        mock_analysis.assert_called_once()
 
 
 class TestAnalysis(TestCase):
-    def setUp(self):
-        self.analysis = ProjectStageAnalysis()
-
     def test_transform_for_heatmap(self):
         data = [AnalysisData("run tests", "TestProject", "something"),
                 AnalysisData("run tests", "TestProject", "something"),
@@ -35,4 +31,4 @@ class TestAnalysis(TestCase):
                                  "y": ["TestProject", "AnotherProject"],
                                  "x": ["run tests", "re-verify env"]}
 
-        self.assertEquals(self.analysis.transform_for_heatmap(data), expected_heatmap_data)
+        self.assertEquals(transform_for_heatmap(projects_stage_inner_groupby)(data), expected_heatmap_data)

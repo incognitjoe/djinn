@@ -1,7 +1,9 @@
 import json
 
 import falcon
-from djinn.analysis import ProjectStageAnalysis
+
+from djinn.analysis import transform_for_heatmap, projects_stage_inner_groupby
+
 
 def format_results(resultlist):
     """
@@ -36,9 +38,9 @@ class HeatmapResource(object):
 
     def on_get(self, req, resp, project=None):
         if project is None:
-            analysis = ProjectStageAnalysis()
             failures = self.db.get_all_failures()
-            resp.body = json.dumps(self.service.get_failures_heatmap_data(analysis,failures))
+            resp.body = json.dumps(
+                self.service.get_failures_heatmap_data(transform_for_heatmap(projects_stage_inner_groupby), failures))
             resp.status = falcon.HTTP_200
         else:
             resp.body = json.dumps({'Error': 'Not implemented yet.'})
