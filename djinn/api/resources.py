@@ -2,7 +2,7 @@ import json
 
 import falcon
 
-from djinn.analysis import transform_for_heatmap, projects_stage_inner_groupby
+from djinn.analysis import transform_for_heatmap, projects_stage_inner_groupby, repos_stage_inner_groupby
 
 
 def format_results(resultlist):
@@ -43,8 +43,10 @@ class HeatmapResource(object):
                 self.service.get_failures_heatmap_data(transform_for_heatmap(projects_stage_inner_groupby), failures))
             resp.status = falcon.HTTP_200
         else:
-            resp.body = json.dumps({'Error': 'Not implemented yet.'})
-            resp.status = falcon.HTTP_501
+            failures = self.db.get_failed_results_for_project(project)
+            resp.body = json.dumps(
+                self.service.get_failures_heatmap_data(transform_for_heatmap(repos_stage_inner_groupby), failures))
+            resp.status = falcon.HTTP_200
 
 
 @falcon.after(set_cors_header)

@@ -1,5 +1,4 @@
 import os
-
 from falcon import testing
 
 from djinn import Djinn
@@ -37,8 +36,10 @@ class TestDjinn(testing.TestCase):
         """
         Unimplemented, will break once implemented.
         """
+        expected_heatmap = {u'x': [u'Setup', u'Deploy'], u'y': [u'jenkinsfile-test'], u'z': [[1, 1]]}
         result = self.simulate_get('/heatmap/TEST/')
-        self.assertEqual(result.status_code, 501)
+        self.assertEqual(result.status_code, 200)
+        self.assertEqual(result.json, expected_heatmap)
 
     def test_results(self):
         result = self.simulate_get('/results/')
