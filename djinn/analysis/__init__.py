@@ -6,10 +6,12 @@ class AnalysisService(object):
     def get_failures_heatmap_data(self, analysis_strategy, failures):
         """
         Get the heatmap data for all failures.
+        :param analysis_strategy: a function which takes data and groups by a
+         key in that data.
         :return: a dictionary of the data for the x, y and z axes of a heatmap.
         """
         data = [AnalysisData(x.stage_failed, x.project, x.repository) for x in failures]
-        return analysis_strategy(data)
+        return _transform_for_heatmap(analysis_strategy)(data)
 
 
 class AnalysisData(object):
@@ -35,7 +37,23 @@ class AnalysisData(object):
         return self._repo
 
 
-def transform_for_heatmap(inner_groupby):
+def projects_stage_inner_groupby(stage_data):
+    """
+    Strategy for transforming raw data into heatmap data mapping projects
+    against stages.
+    """
+    return groupby(stage_data, lambda item: item.project)
+
+
+def repos_stage_inner_groupby(stage_data):
+    """
+    Strategy for transforming raw data into heatmap data mapping projects
+    against stages.
+    """
+    return groupby(stage_data, lambda item: item.repo)
+
+
+def _transform_for_heatmap(inner_groupby):
     """
     Transform data into the format for a plotly heatmap.
     :param data: a list of AnalysisData objects.
@@ -79,19 +97,3 @@ def _dedup(data, inner_groupby):
             item[inner_data_key] = failures
         deduped[stage_name] = item
     return deduped
-
-
-def projects_stage_inner_groupby(stage_data):
-    """
-    Strategy for transforming raw data into heatmap data mapping projects 
-    against stages. 
-    """
-    return groupby(stage_data, lambda item: item.project)
-
-
-def repos_stage_inner_groupby(stage_data):
-    """
-    Strategy for transforming raw data into heatmap data mapping projects 
-    against stages. 
-    """
-    return groupby(stage_data, lambda item: item.repo)
