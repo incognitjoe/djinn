@@ -2,16 +2,16 @@ from collections import Counter, OrderedDict
 from itertools import groupby
 
 
-class AnalysisService(object):
-    def get_failures_heatmap_data(self, analysis_strategy, failures):
-        """
-        Get the heatmap data for all failures.
-        :param analysis_strategy: a function which takes data and groups by a
-         key in that data.
-        :return: a dictionary of the data for the x, y and z axes of a heatmap.
-        """
-        data = [AnalysisData(x.stage_failed, x.project, x.repository) for x in failures]
-        return _transform_for_heatmap(analysis_strategy)(data)
+def gen_heatmap_with_strategy(analysis_strategy, failures):
+    """
+    Get the heatmap data for all given failures.
+    :param analysis_strategy: a function which takes data and groups by a
+     key in that data.
+    :param failures: the failures data to generate the heatmap from.
+    :return: a dictionary of the data for the x, y and z axes of a heatmap.
+    """
+    data = [AnalysisData(x.stage_failed, x.project, x.repository) for x in failures]
+    return _transform_for_heatmap(analysis_strategy)(data)
 
 
 class AnalysisData(object):

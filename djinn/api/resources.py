@@ -2,7 +2,7 @@ import json
 
 import falcon
 
-from djinn.analysis import projects_stage_inner_groupby, repos_stage_inner_groupby
+from djinn.analysis import gen_heatmap_with_strategy, projects_stage_inner_groupby, repos_stage_inner_groupby
 
 
 def format_results(resultlist):
@@ -32,20 +32,19 @@ class HeatmapResource(object):
     REST resource for heatmap data
     """
 
-    def __init__(self, analysis_service, database):
+    def __init__(self, database):
         self.db = database
-        self.service = analysis_service
 
     def on_get(self, req, resp, project=None):
         if project is None:
             failures = self.db.get_all_failures()
             resp.body = json.dumps(
-                self.service.get_failures_heatmap_data(projects_stage_inner_groupby, failures))
+                gen_heatmap_with_strategy(projects_stage_inner_groupby, failures))
             resp.status = falcon.HTTP_200
         else:
             failures = self.db.get_failed_results_for_project(project)
             resp.body = json.dumps(
-                self.service.get_failures_heatmap_data(repos_stage_inner_groupby, failures))
+                gen_heatmap_with_strategy(repos_stage_inner_groupby, failures))
             resp.status = falcon.HTTP_200
 
 

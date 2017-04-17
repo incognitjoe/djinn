@@ -1,12 +1,10 @@
 from unittest import TestCase
 
-from djinn.analysis import AnalysisService, AnalysisData, projects_stage_inner_groupby, \
-    repos_stage_inner_groupby
+from djinn.analysis import gen_heatmap_with_strategy, projects_stage_inner_groupby, repos_stage_inner_groupby
 
 
 class TestAnalysisService(TestCase):
     def test_transform_for_projects_heatmap(self):
-        service = AnalysisService()
         data = [MockPipelineRun("run tests", "TestProject", "something"),
                 MockPipelineRun("run tests", "TestProject", "something"),
                 MockPipelineRun("re-verify env", "TestProject", "something-else"),
@@ -15,10 +13,9 @@ class TestAnalysisService(TestCase):
         expected_heatmap_data = {"z": [[2, 2], [0, 1]],
                                  "y": ["TestProject", "AnotherProject"],
                                  "x": ["run tests", "re-verify env"]}
-        self.assertEquals(service.get_failures_heatmap_data(projects_stage_inner_groupby, data), expected_heatmap_data)
+        self.assertEquals(gen_heatmap_with_strategy(projects_stage_inner_groupby, data), expected_heatmap_data)
 
     def test_transform_for_repos_heatmap(self):
-        service = AnalysisService()
         data = [MockPipelineRun("run tests", "TestProject", "something"),
                 MockPipelineRun("run tests", "TestProject", "something"),
                 MockPipelineRun("re-verify env", "TestProject", "something-else"),
@@ -27,7 +24,7 @@ class TestAnalysisService(TestCase):
         expected_heatmap_data = {"z": [[2, 0], [0, 3]],
                                  "y": ["something", "something-else"],
                                  "x": ["run tests", "re-verify env"]}
-        self.assertEquals(service.get_failures_heatmap_data(repos_stage_inner_groupby, data), expected_heatmap_data)
+        self.assertEquals(gen_heatmap_with_strategy(repos_stage_inner_groupby, data), expected_heatmap_data)
 
 
 class MockPipelineRun:

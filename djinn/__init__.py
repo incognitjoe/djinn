@@ -1,4 +1,3 @@
-from .analysis import AnalysisService
 from .api import DJinnAPI
 from .database import PipelineResults
 from .djenkins import DJenkins
@@ -16,7 +15,6 @@ class Djinn(object):
         self.dj = DJenkins(url=jenkinsurl, logger=self.logger)
         self.dburl = dburl
         self.db = PipelineResults(connection_url=dburl, echo=False)
-        self.service = AnalysisService()
 
     def get_all_pipeline_results_and_save_to_db(self, pipelinebranch):
         """
@@ -33,4 +31,4 @@ class Djinn(object):
         Instantiate a falcon.API instance.
         :return: falcon.API instance
         """
-        return DJinnAPI(djenkins=self.dj, pipeline_results=self.db, analysis_service=self.service)
+        return DJinnAPI(djenkins=self.dj, pipeline_results=self.db)
