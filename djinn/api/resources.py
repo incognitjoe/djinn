@@ -2,7 +2,7 @@ import json
 
 import falcon
 
-from djinn.analysis import gen_heatmap_with_strategy, projects_stage_inner_groupby, repos_stage_inner_groupby
+from ..analysis import gen_heatmap_with_strategy, projects_stage_inner_groupby, repos_stage_inner_groupby
 
 
 def format_results(resultlist):
