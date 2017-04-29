@@ -19,38 +19,38 @@ def gen_data_from_z(z):
     """
     Given the z axis values (2d list of failures) generate data that would have
     given us this z value.
-    :param z: 
+    :param z: a list of lists of failures.
     :return: the data that would have given this z value, the z value, the x value 
         (stages) and the y value (projects).
     """
     data = []
-    y_len = len(z)
-    x_len = 0 if y_len == 0 else len(z[0])
-    projects = [uuid4() for _ in range(y_len)]
-    stages = [uuid4() for _ in range(x_len)]
+    projects_len = len(z)
+    stages_len = 0 if projects_len == 0 else len(z[0])
+    projects = [uuid4() for _ in xrange(projects_len)]
+    stages = [uuid4() for _ in xrange(stages_len)]
     for pidx, project in enumerate(projects):
         for sidx, stage in enumerate(stages):
             failures = z[pidx][sidx]
             repo = strings.example()
-            for _ in range(failures):
+            for _ in xrange(failures):
                 data.append(MockPipelineRun(stage_failed=stage, project=project, repository=repo))
     return data, z, stages, projects
 
 
-def build_failure_map(x, y, z):
+def build_failure_map(stages, projects, z):
     """
     Build a dict mapping the key "projects + stages" to the number 
     of failures.
-    :param x: 
-    :param y: 
-    :param z: 
+    :param stages: list of stages.
+    :param projects: list of projects.
+    :param z: a list of lists of failures.
     :return: the failures map.
     """
     failure_lookup = dict()
-    for y_index, x_list in enumerate(z):
-        for x_index, failures in enumerate(x_list):
-            project = y[y_index]
-            stage = x[x_index]
+    for stages_index, failures_list in enumerate(z):
+        for failures_list_index, failures in enumerate(failures_list):
+            project = projects[stages_index]
+            stage = stages[failures_list_index]
             failure_lookup[str(project) + str(stage)] = failures
 
     return failure_lookup
@@ -66,10 +66,12 @@ class TestAnalysisService(TestCase):
         matches the given z value.
         :param given_z: the generated z value.       
         """
-        data, expected_z, expected_x, expected_y = gen_data_from_z(given_z)
+        data, expected_z, expected_stages, expected_projects = gen_data_from_z(given_z)
         actual = gen_heatmap_with_strategy(projects_stage_inner_groupby, data)
-        expected_failures = build_failure_map(expected_x, expected_y, expected_z)
-        actual_failures = build_failure_map(actual['x'], actual['y'], actual['z'])
+        expected_failures = build_failure_map(expected_stages, expected_projects, expected_z)
+        stages = actual['x']
+        projects = actual['y']
+        actual_failures = build_failure_map(stages, projects, actual['z'])
         self.assertEqual(expected_failures, actual_failures)
 
 
