@@ -11,8 +11,8 @@ strings = text(characters(min_codepoint=66, max_codepoint=90)).map(lambda s: s.s
     lambda s: len(s) > 0)
 
 """ Generate a list of lists of equal sizes. """
-rectangle_lists = integers(min_value=5, max_value=10).flatmap(
-    lambda n: lists(lists(integers(min_value=5, max_value=10), min_size=n, max_size=n)))
+rectangle_lists = integers(min_value=2, max_value=50).flatmap(
+    lambda n: lists(lists(integers(min_value=2, max_value=30), min_size=n, max_size=n)))
 
 
 def gen_data_from_z(z):
@@ -33,16 +33,37 @@ def gen_data_from_z(z):
 class TestAnalysisService(TestCase):
     @given(rectangle_lists)
     @settings(max_examples=100)
-    def test_transform(self, given_z):
+    def test_transform_grouping_by_projects(self, given_z):
         """
         Given a known value for z, generate the data that would give this z,
         transform the data and check that the z value from the transformed data 
         matches the given z value.
         :param given_z: the generated z value.       
         """
-        data, z, x, y = gen_data_from_z(given_z)
+        data, expected_z, expected_x, expected_y = gen_data_from_z(given_z)
         actual = gen_heatmap_with_strategy(projects_stage_inner_groupby, data)
-        self.assertEquals(sort_nested(given_z), sort_nested(actual['z']))
+        expected_failures = build_failure_map(expected_x, expected_y, expected_z)
+        actual_failures = build_failure_map(actual['x'], actual['y'], actual['z'])
+        self.assertEqual(expected_failures, actual_failures)
+
+
+def build_failure_map(x, y, z):
+    """
+    Build a dict mapping the key "projects + stages" to the number 
+    of failures.
+    :param x: 
+    :param y: 
+    :param z: 
+    :return: the failures map.
+    """
+    failure_lookup = dict()
+    for y_index, x_list in enumerate(z):
+        for x_index, failures in enumerate(x_list):
+            project = y[y_index]
+            stage = x[x_index]
+            failure_lookup[str(project) + str(stage)] = failures
+
+    return failure_lookup
 
 
 class MockPipelineRun:
@@ -62,13 +83,3 @@ class MockPipelineRun:
     @property
     def repository(self):
         return self._repository
-
-
-def sort_nested(list_of_lists):
-    """
-    Sort lists of lists.
-    :param list_of_lists: a list of lists.
-    :return: a sorted list of lists, where the nested lists 
-        are also sorted.
-    """
-    return sorted(map(lambda item: sorted(item), list_of_lists))
