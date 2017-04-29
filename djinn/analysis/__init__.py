@@ -49,11 +49,11 @@ def projects_stage_inner_groupby(stage_data):
 
 def repos_stage_inner_groupby(stage_data):
     """
-    Strategy for transforming raw data into heatmap data mapping projects
+    Strategy for transforming raw data into heatmap data mapping repos
     against stages.
     """
     staga_data_list = list(stage_data)
-    staga_data_list.sort(key=lambda item: item.project)
+    staga_data_list.sort(key=lambda item: item.repo)
     return groupby(staga_data_list, lambda item: item.repo)
 
 
@@ -64,7 +64,7 @@ def _transform_for_heatmap(analysis_strategy):
     :return: a function which transforms data given the strategy.
     """
 
-    def f(data):
+    def transformer(data):
         x = []
         y = OrderedDict()
         z = []
@@ -81,7 +81,7 @@ def _transform_for_heatmap(analysis_strategy):
             z.append(z_next)
         return {"x": x, "y": y.keys(), "z": z}
 
-    return f
+    return transformer
 
 
 def _dedup(data, inner_groupby):
