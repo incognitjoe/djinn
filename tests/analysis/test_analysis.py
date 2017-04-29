@@ -2,6 +2,7 @@ from uuid import uuid4
 
 from hypothesis import given, settings
 from hypothesis.strategies import lists, integers, text, characters
+
 from unittest import TestCase
 
 from djinn.analysis import gen_heatmap_with_strategy, projects_stage_inner_groupby
@@ -73,6 +74,7 @@ class TestAnalysisService(TestCase):
         projects = actual['y']
         actual_failures = build_failure_map(stages, projects, actual['z'])
         self.assertEqual(expected_failures, actual_failures)
+
 
 
 class MockPipelineRun:
