@@ -16,6 +16,13 @@ rectangle_lists = integers(min_value=2, max_value=50).flatmap(
 
 
 def gen_data_from_z(z):
+    """
+    Given the z axis values (2d list of failures) generate data that would have
+    given us this z value.
+    :param z: 
+    :return: the data that would have given this z value, the z value, the x value 
+        (stages) and the y value (projects).
+    """
     data = []
     y_len = len(z)
     x_len = 0 if y_len == 0 else len(z[0])
@@ -28,23 +35,6 @@ def gen_data_from_z(z):
             for _ in range(failures):
                 data.append(MockPipelineRun(stage_failed=stage, project=project, repository=repo))
     return data, z, stages, projects
-
-
-class TestAnalysisService(TestCase):
-    @given(rectangle_lists)
-    @settings(max_examples=100)
-    def test_transform_grouping_by_projects(self, given_z):
-        """
-        Given a known value for z, generate the data that would give this z,
-        transform the data and check that the z value from the transformed data 
-        matches the given z value.
-        :param given_z: the generated z value.       
-        """
-        data, expected_z, expected_x, expected_y = gen_data_from_z(given_z)
-        actual = gen_heatmap_with_strategy(projects_stage_inner_groupby, data)
-        expected_failures = build_failure_map(expected_x, expected_y, expected_z)
-        actual_failures = build_failure_map(actual['x'], actual['y'], actual['z'])
-        self.assertEqual(expected_failures, actual_failures)
 
 
 def build_failure_map(x, y, z):
@@ -64,6 +54,23 @@ def build_failure_map(x, y, z):
             failure_lookup[str(project) + str(stage)] = failures
 
     return failure_lookup
+
+
+class TestAnalysisService(TestCase):
+    @given(rectangle_lists)
+    @settings(max_examples=100)
+    def test_transform_grouping_by_projects(self, given_z):
+        """
+        Given a known value for z, generate the data that would give this z,
+        transform the data and check that the z value from the transformed data 
+        matches the given z value.
+        :param given_z: the generated z value.       
+        """
+        data, expected_z, expected_x, expected_y = gen_data_from_z(given_z)
+        actual = gen_heatmap_with_strategy(projects_stage_inner_groupby, data)
+        expected_failures = build_failure_map(expected_x, expected_y, expected_z)
+        actual_failures = build_failure_map(actual['x'], actual['y'], actual['z'])
+        self.assertEqual(expected_failures, actual_failures)
 
 
 class MockPipelineRun:
