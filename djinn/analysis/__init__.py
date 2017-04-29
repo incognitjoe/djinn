@@ -1,4 +1,4 @@
-from collections import Counter, OrderedDict
+from collections import OrderedDict
 from itertools import groupby
 
 
@@ -42,9 +42,9 @@ def projects_stage_inner_groupby(stage_data):
     Strategy for transforming raw data into heatmap data mapping projects
     against stages.
     """
-    staga_data_list = list(stage_data)
-    staga_data_list.sort(key=lambda item: item.project)
-    return groupby(staga_data_list, lambda item: item.project)
+    stage_data_list = list(stage_data)
+    stage_data_list.sort(key=lambda item: item.project)
+    return groupby(stage_data_list, lambda item: item.project)
 
 
 def repos_stage_inner_groupby(stage_data):
@@ -52,9 +52,9 @@ def repos_stage_inner_groupby(stage_data):
     Strategy for transforming raw data into heatmap data mapping repos
     against stages.
     """
-    staga_data_list = list(stage_data)
-    staga_data_list.sort(key=lambda item: item.repo)
-    return groupby(staga_data_list, lambda item: item.repo)
+    stage_data_list = list(stage_data)
+    stage_data_list.sort(key=lambda item: item.repo)
+    return groupby(stage_data_list, lambda item: item.repo)
 
 
 def _transform_for_heatmap(analysis_strategy):
@@ -97,7 +97,7 @@ def _dedup(data, inner_groupby):
     for stage_name, stage_data in groupby(data, lambda x: x.stage):
         item = {}
         for inner_data_key, inner_data in inner_groupby(stage_data):
-            failures = sum(Counter(map(lambda x: x.repo, inner_data)).values())
+            failures = sum(1 for _ in inner_data)
             item[inner_data_key] = failures
         deduped[stage_name] = item
     return deduped
