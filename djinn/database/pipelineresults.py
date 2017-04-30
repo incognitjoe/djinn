@@ -175,7 +175,8 @@ class PipelineResults(object):
         :return: list of strings
         """
         session = self.session_factory()
-        results = [row.repo for row in session.query(PipelineRun.repository.distinct().label('repo')).all()]
+        results = [row.repo for row in
+                   session.query(PipelineRun.repository.distinct().label('repo')).filter_by(project=project).all()]
         session.commit()
         session.close()
         return results
