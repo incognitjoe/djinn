@@ -121,7 +121,7 @@ class TestPipelineResults(TestCase):
         for project in ['TEST', 'NEWTEST', 'MYPROJECT']:
             self.db.insert_single_result(generate_mock_result(project=project))
         projects = self.db.get_projects()
-        self.assertListEqual(['MYPROJECT', 'NEWTEST', 'TEST'], projects)
+        self.assertItemsEqual(['MYPROJECT', 'NEWTEST', 'TEST'], projects)
 
     def test_get_repos_for_project(self):
         """
