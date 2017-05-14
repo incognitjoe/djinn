@@ -1,5 +1,3 @@
-import time
-
 from sqlalchemy import create_engine
 from sqlalchemy import func, cast, Integer, String
 from sqlalchemy.orm import sessionmaker
@@ -230,5 +228,3 @@ class PipelineResults(object):
                 PipelineRun.run_id == cast(subq.c.max_run_id, String)).all()
         session.close()
         return results
-
-
